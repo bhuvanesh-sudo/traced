@@ -51,6 +51,22 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
 
+  const handleHotReset = () => {
+    // 1. Reset Game State
+    setHighestProgress(0);
+    setPenaltyScore(0);
+    setFinalScore(0);
+    setIsDrawing(false);
+    setMessage("Start at the Green Circle");
+
+    // 2. Force Redraw
+    const canvas = canvasRef.current;
+    if(canvas && scaledPath) {
+        const ctx = canvas.getContext('2d');
+        drawScene(ctx, scaledPath);
+    }
+  };
+
   // SCORE CALCULATION
   useEffect(() => {
     const calculated = Math.max(0, Math.floor(highestProgress) - Math.floor(penaltyScore));
@@ -291,6 +307,12 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
           Debug
         </label>
         <span style={{color: currentMode.color}}>{currentMode.label} Mode</span>
+        <button 
+            onClick={handleHotReset}
+            className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-1 rounded text-sm font-bold flex items-center gap-2 transition"
+        >
+            <span>↺</span> Retry
+        </button>
       </div>
 
       {/* CANVAS CONTAINER */}
