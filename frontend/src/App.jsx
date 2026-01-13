@@ -6,6 +6,7 @@ import './App.css'
 function App() {
   const [shapes, setShapes] = useState([]);
   const [currentShape, setCurrentShape] = useState(null);
+  const [difficulty, setDifficulty] = useState('medium'); 
 
   // 1. Fetch Levels on Load
   useEffect(() => {
@@ -22,7 +23,19 @@ function App() {
       {currentShape ? (
         <div>
           <button onClick={() => setCurrentShape(null)}>Back to Map</button>
-          <TraceCanvas shape={currentShape} />
+          <div style={{ margin: '10px 0' }}>
+          <label>Difficulty: </label>
+          <select 
+            value={difficulty} 
+            onChange={(e) => setDifficulty(e.target.value)}
+            style={{ padding: '5px', fontSize: '16px' }}
+          >
+            <option value="easy">Easy (Wide, Low Penalty)</option>
+            <option value="medium">Medium (Normal)</option>
+            <option value="hard">Hard (Strict, High Penalty)</option>
+          </select>
+          </div>
+          <TraceCanvas shape={currentShape} difficulty={difficulty}/>
         </div>
       ) : (
         <div className="level-grid">
