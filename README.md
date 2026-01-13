@@ -1,63 +1,165 @@
-# Traced: Web-Based Therapeutic RPG
+# Traced: Web-Based Therapeutic RPG 🎮
 
-> **"A Web-based RPG designed specifically to assist children with ASD and Dyspraxia in developing fine motor skills."**
+**Traced** is a web-based therapeutic application designed to assist individuals with **Autism Spectrum Disorder (ASD)** and **Dyspraxia** in developing fine motor skills.
 
-**Traced** is a gamified occupational therapy tool built using **React** and the **HTML5 Canvas API**. It merges the engagement of Role-Playing Games (RPGs) with the repetitive motor-skill drills required for dyspraxia intervention, making therapy accessible and enjoyable.
+By gamifying graphomotor exercises, users practice precision control by tracing abstract shapes. The system tracks accuracy, awards XP, and provides a low-frustration "Hot Reset" mechanism to encourage repetitive practice without anxiety.
 
-## 📖 History & Motivation
+---
 
-Traditional fine motor skill therapy often involves repetitive tracing worksheets or pegboard tasks. For children with **Autism Spectrum Disorder (ASD)** or **Dyspraxia**, these tasks can be under-stimulating or frustration-inducing, leading to disengagement.
+## Features
 
-**Traced** was developed to solve this by:
-1.  **Digitizing the "Tracing" Mechanic:** Moving graphomotor exercises from paper to the screen to improve mouse/trackpad proficiency.
-2.  **Gamification:** Wrapping motor drills in an RPG narrative to provide extrinsic motivation (XP, Loot, Story) for completing physical tasks.
-
-## 🧩 How It Helps: Design for Accessibility
-
-The architecture of *Traced* was built with specific cognitive and physical accessibility guidelines in mind.
-
-### 1. Targeting Dyspraxia (Fine Motor Control)
-Dyspraxia affects the planning and coordination of movement.
-* **The "Tracing" Engine:** The core mechanic requires the user to guide a character/cursor along a specific path without deviating. This strengthens **hand-eye coordination** and cursor precision.
-* **Canvas Smoothing:** The game uses `requestAnimationFrame` for a high refresh rate. This ensures immediate visual feedback between hand movement and screen response, which is critical for correcting motor planning errors.
+* **✍️ Dynamic Tracing Engine:** Uses HTML5 Canvas to render shapes and detect cursor path compliance in real-time.
+* **🔐 User Authentication:** Secure Login and Registration system using JWT (JSON Web Tokens) and Bcrypt.
+* **📈 Progression System:** Users earn XP based on accuracy. Levels include "The Straight Path", "The Infinity Knot", and more.
+* **🏆 Leaderboard:** Global ranking system to view top players by XP.
+* **⚙️ Difficulty Modes:**
+* **Easy:** Wide tolerance, low penalty.
+* **Medium:** Standard precision required.
+* **Hard:** Strict boundaries, high penalty for deviation.
 
 
+* **🔄 Hot Reset:** Instant level retry mechanism designed for accessibility (no page reloads).
+* **📱 Responsive Design:** Custom CSS styling for a focused, distraction-free interface.
 
-### 2. Targeting ASD (Sensory & Routine)
-* **Low-Frustration UI:** The **"Hot Reset"** feature (implemented via React State) allows the child to instantly restart a level if they make a mistake. There are no "Game Over" screens or punishing sounds, reducing anxiety and preventing meltdowns associated with failure.
-* **Predictable Visuals:** The pixel-art aesthetic provides high-contrast, clear boundaries that are easy to process visually, avoiding the sensory overload of modern high-fidelity graphics.
+---
 
-### 3. Cognitive Load Management
-* **Single-Task Focus:** The game isolates one motor task at a time (e.g., "Move from A to B") without complex keyboard combinations that might confuse a user with poor proprioception.
+## 🛠️ Technology Stack
 
-## 🛠️ Technical Architecture
+* **Frontend:** React.js (Vite), HTML5 Canvas API
+* **Backend:** Node.js, Express.js
+* **Database:** MongoDB (Mongoose ODM)
+* **Security:** `bcryptjs` (Hashing), `jsonwebtoken` (Auth), `cors` (Cross-Origin Resource Sharing)
 
-* **Frontend:** React (Vite)
-* **Rendering:** HTML5 Canvas 2D Context (for pixel-perfect collision detection on traced paths).
-* **Backend:** Node.js/Express (for saving progress/scoreboards so parents/therapists can track improvement over time).
-* **Database:** MongoDB (Stores session data to analyze motor consistency).
+---
 
-## 🚀 Key Features
+## 🚀 Installation & Setup
 
-* **Precision Hitboxes:** The game detects when the cursor leaves the "safe path" using pixel-data analysis, providing gentle correction rather than failure states.
-* **Therapeutic Progression:** Levels scale in difficulty, starting with straight lines (basic linear movement) and progressing to curves and zig-zags (complex motor planning).
-* **Cross-Platform Access:** Being web-based, it allows therapy to happen at home on any computer, removing barriers to entry.
+### Prerequisites
 
-## 📦 Installation
+* [Node.js](https://nodejs.org/) (v16 or higher)
+* [MongoDB](https://www.mongodb.com/try/download/community) (Running locally or via Atlas)
 
-1.  Clone the repository:
-    ```bash
-    git clone [https://github.com/your-username/traced-rpg.git](https://github.com/your-username/traced-rpg.git)
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Run the application:
-    ```bash
-    npm run dev
-    ```
+### 1. Clone the Repository
 
-## 📄 License
+```bash
+git clone https://github.com/bhuvanesh-sudo/traced.git
+cd traced
 
-Distributed under the MIT License.
+```
+
+### 2. Backend Setup
+
+The backend handles the API, database connection, and authentication.
+
+1. Navigate to the backend folder:
+```bash
+cd backend
+
+```
+
+
+2. Install dependencies:
+```bash
+npm install
+
+```
+
+
+3. **Database Seeding (Crucial):**
+You must populate the database with the initial shapes (levels). Run:
+```bash
+node seed.js
+
+```
+
+
+*(You should see "✅ Levels Seeded" in the console)*.
+4. Start the Server:
+```bash
+node server.js
+
+```
+
+
+*(Ensure it says "🚀 Server running on port 5000" and "✅ MongoDB Connected")*
+
+### 3. Frontend Setup
+
+Open a **new terminal** window for the frontend.
+
+1. Navigate to the root (or frontend folder):
+```bash
+cd frontend  # (Or root, depending on your folder structure)
+
+```
+
+
+2. Install dependencies:
+```bash
+npm install
+
+```
+
+
+3. Start the React App:
+```bash
+npm run dev
+
+```
+
+
+4. Open your browser at `http://localhost:5173`.
+
+---
+
+## 🕹️ How to Play
+
+1. **Register/Login:** Create a "Hero" account to track your stats.
+2. **Select a Level:** Choose a shape from the sidebar (e.g., "The Straight Path").
+3. **Choose Difficulty:** Select Easy, Medium, or Hard.
+4. **Trace:**
+* Click and hold to draw.
+* Follow the **Grey Guide Line**.
+* Stay inside the path! If you go outside, the line turns red.
+
+
+5. **Save XP:**
+* Reach **98%** progress to complete the level.
+* Click the green **"💾 Save & Claim XP"** button that appears.
+* Watch your XP grow in the sidebar!
+
+---
+
+## 🔗 API Reference
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| **POST** | `/api/auth/register` | Register a new user |
+| **POST** | `/api/auth/login` | Login and receive JWT |
+| **GET** | `/api/game/shapes` | Fetch all level data |
+| **GET** | `/api/game/leaderboard` | Get top 10 players by XP |
+| **POST** | `/api/game/attempt` | Save game score and update XP |
+
+---
+
+## ❓ Troubleshooting
+
+**1. "Network Error" or "Failed to fetch"**
+
+* Ensure the backend is running (`node server.js`).
+* Check that `server.js` has CORS enabled for `localhost:5173`.
+
+**2. Login Page looks broken**
+
+* Ensure `Login.css` is imported in `Login.jsx`.
+
+**3. "Save XP" button not showing**
+
+* You must complete the shape with >98% accuracy.
+* Ensure you are logged in.
+
+**4. Levels are empty**
+
+* Run `node seed.js` in the backend folder to restore the shapes in MongoDB.
+
+---
