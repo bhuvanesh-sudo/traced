@@ -40,6 +40,7 @@ body {
   font-size: 1.8rem;
   letter-spacing: -1px;
   background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
