@@ -10,6 +10,7 @@ const app = express();
 app.use(cors()); // Allow frontend to talk to backend
 app.use(express.json()); // Parse JSON bodies
 
+
 // Database Connection
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ MongoDB Connected Successfully'))
@@ -19,7 +20,7 @@ mongoose.connect(process.env.MONGODB_URI)
 app.get('/', (req, res) => {
   res.send('Traced API is Running');
 });
-
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/game', gameRoutes);
 
 // Start Server

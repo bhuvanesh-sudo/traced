@@ -92,10 +92,23 @@ const shapes = [
     svgPath: "M 50 10 L 61 40 L 95 40 L 67 60 L 78 90 L 50 75 L 22 90 L 33 60 L 5 40 L 39 40 Z"
   },
   {
+    name: "The Circuit Board",
+    difficulty: 9,
+    // Starts top-left, winds like a snake but with varying lengths
+    svgPath: "M 10 10 L 10 50 L 30 50 L 30 20 L 60 20 L 60 80 L 20 80 L 20 60 L 90 60 L 90 10"
+  },
+  {
     name: "The Lightning Bolt",
     difficulty: 10,
     category: "linear",
     svgPath: "M 40 10 L 60 10 L 30 50 L 70 50 L 40 90"
+  },
+  {
+    name: "The Infinity Knot",
+    difficulty: 10,
+    // A smooth complex curve using Quadratic Beziers (Q)
+    // Starts bottom left, curves up-right, loops down-right, crosses back to top-left
+    svgPath: "M 10 80 Q 30 10 50 50 Q 70 90 90 20 L 90 80 Q 70 10 50 50 Q 30 90 10 20"
   }
 ];
 
