@@ -36,8 +36,8 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
 
   // CONFIGURATION
   const currentMode = DIFFICULTY_SETTINGS[difficulty];
-  const CANVAS_SIZE = 400; 
-  const SCALE_FACTOR = 4;  
+  const CANVAS_SIZE = 600; 
+  const SCALE_FACTOR = 6;  
   
   // VISUALS
   const VISUAL_WIDTH = 30; 
@@ -297,7 +297,7 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
       <div className="relative inline-block shadow-2xl rounded-xl overflow-hidden bg-gray-900 border border-gray-700">
         <canvas
             ref={canvasRef}
-            style={{ width: '400px', height: '400px', cursor: 'crosshair', touchAction: 'none' }}
+            style={{ width: '600px', height: '600px', cursor: 'crosshair', touchAction: 'none' }}
             onMouseDown={() => setIsDrawing(true)}
             onMouseUp={() => setIsDrawing(false)}
             onMouseLeave={() => setIsDrawing(false)}
