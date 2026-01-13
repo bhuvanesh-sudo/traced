@@ -175,3 +175,27 @@ body {
 .text-gray-500 { color: #6b7280; }
 .uppercase { text-transform: uppercase; }
 .tracking-widest { letter-spacing: 0.1em; }
+
+/* src/App.css */
+
+.logout-btn {
+  background-color: rgba(220, 38, 38, 0.2); /* Dark, transparent red */
+  color: #f87171; /* Light red text */
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  font-size: 0.75rem; /* Small text size (12px) */
+  padding: 4px 10px;  /* Small padding */
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  /* Stop it from stretching */
+  height: fit-content;
+  align-self: flex-start;
+  margin-left: 10px;
+}
+
+.logout-btn:hover {
+  background-color: rgba(220, 38, 38, 0.4);
+  color: white;
+  border-color: #ef4444;
+}

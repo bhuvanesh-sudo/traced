@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-
+import './TraceCanvas.css';
 // GAME MODE CONFIGURATION
 const DIFFICULTY_SETTINGS = {
   easy: { 
@@ -22,9 +22,13 @@ const DIFFICULTY_SETTINGS = {
   }
 };
 
-const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
+const TraceCanvas = ({ shape, difficulty = 'medium', userId, onScoreUpdate }) => {
   const canvasRef = useRef(null);
+  
+  // STATE
   const [isDrawing, setIsDrawing] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [isLevelComplete, setIsLevelComplete] = useState(false); // New state for button visibility
   
   // SCORING
   const [highestProgress, setHighestProgress] = useState(0);
@@ -47,9 +51,11 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
   const pathPointsRef = useRef([]); 
   const [scaledPath, setScaledPath] = useState(null);
   
-  // GUIDE STATE (Start/End coordinates)
+  // GUIDE STATE
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
+
+  // --- ACTIONS ---
 
   const handleHotReset = () => {
     // 1. Reset Game State
@@ -57,6 +63,8 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
     setPenaltyScore(0);
     setFinalScore(0);
     setIsDrawing(false);
+    setHasSubmitted(false);
+    setIsLevelComplete(false); // Hide the button
     setMessage("Start at the Green Circle");
 
     // 2. Force Redraw
@@ -67,12 +75,64 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
     }
   };
 
-  // SCORE CALCULATION
+  const handleManualSubmit = async () => {
+    if (!userId) {
+        alert("Please log in to save your XP!");
+        return;
+    }
+
+    setHasSubmitted(true);
+    setMessage("⏳ Saving..."); // Changed icon to hourglass
+
+    try {
+      console.log("📤 Sending Score:", { userId, shapeId: shape._id, finalScore });
+
+      const res = await fetch('http://localhost:5000/api/game/attempt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          shapeId: shape._id,
+          isSuccess: true,
+          accuracyScore: finalScore
+        })
+      });
+
+      const data = await res.json();
+      console.log("📥 Server Response:", data);
+
+      if (!res.ok) {
+        throw new Error(data.message || "Server Error");
+      }
+
+      // SUCCESS CASE
+      if (data.newXP !== undefined) {
+        setMessage(`✅ Saved! Total XP: ${data.newXP}`);
+        if (onScoreUpdate) onScoreUpdate(data.newXP); 
+      } else {
+        setMessage("✅ Saved (No XP Change)");
+      }
+
+    } catch (err) {
+      console.error("❌ SAVE FAILED:", err);
+      setMessage("⚠️ Error: " + err.message); // Show actual error on screen
+      setHasSubmitted(false); // Enable the button again so you can retry
+    }
+  };
+
+  // --- EFFECTS ---
+
+  // SCORE CALCULATION & COMPLETION CHECK
   useEffect(() => {
     const calculated = Math.max(0, Math.floor(highestProgress) - Math.floor(penaltyScore));
     setFinalScore(calculated);
-    if(highestProgress === 100 && !isDrawing) setMessage("🎉 Perfect! Select next level.");
-  }, [highestProgress, penaltyScore, isDrawing]);
+    
+    // Logic: If > 98% progress, show completion state
+    if(highestProgress >= 98) {
+      setIsLevelComplete(true);
+      if (!hasSubmitted) setMessage("🎉 Complete! Click 'Save XP' below.");
+    }
+  }, [highestProgress, penaltyScore, hasSubmitted]);
 
   // PATH SETUP
   useEffect(() => {
@@ -90,7 +150,7 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
     const totalLen = tempSvgPath.getTotalLength();
     
     const points = [];
-    for(let i=0; i <= totalLen; i += 0.5) { // Resolution 0.5 for smoother arrows
+    for(let i=0; i <= totalLen; i += 0.5) { 
         const pt = tempSvgPath.getPointAtLength(i);
         points.push({
             x: pt.x * SCALE_FACTOR,
@@ -100,16 +160,13 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
     }
     pathPointsRef.current = points;
 
-    // Set Start (0%) and End (100%) coordinates
     if (points.length > 0) {
         setStartPoint(points[0]);
         setEndPoint(points[points.length - 1]);
     }
 
-    // Reset
-    setHighestProgress(0);
-    setPenaltyScore(0);
-    setMessage(`Start at the Green Circle`);
+    // Reset on shape change
+    handleHotReset();
   }, [shape, difficulty]);
 
   // RENDER LOOP
@@ -123,6 +180,8 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
     }
   }, [scaledPath, showDebug, difficulty, startPoint, endPoint]);
 
+  // --- DRAWING LOGIC ---
+
   const drawScene = (ctx, path) => {
     ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
     ctx.lineCap = 'round';
@@ -135,23 +194,22 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
         ctx.stroke(path);
     }
 
-    // 2. Visual Guide (Gray)
+    // 2. Visual Guide
     ctx.lineWidth = VISUAL_WIDTH; 
     ctx.strokeStyle = '#374151'; 
     ctx.stroke(path);
     
-    // 3. Center Guide (Yellow)
+    // 3. Center Guide
     ctx.lineWidth = 2;
     ctx.strokeStyle = '#fbbf24';
     ctx.stroke(path);
 
-    // 4. DRAW GUIDES (Start, End, Arrows)
+    // 4. DRAW GUIDES
     drawGuides(ctx);
   };
 
   const drawGuides = (ctx) => {
-      // A. DIRECTION ARROWS
-      // We draw arrows at 25%, 50%, and 75% marks to show flow
+      // A. ARROWS
       const points = pathPointsRef.current;
       if(points.length > 0) {
           const arrowIndices = [
@@ -160,42 +218,37 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
               Math.floor(points.length * 0.75)
           ];
 
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'; // Faint white arrows
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
           
           arrowIndices.forEach(idx => {
               const p = points[idx];
-              const nextP = points[Math.min(idx + 5, points.length - 1)]; // Look ahead for angle
+              const nextP = points[Math.min(idx + 5, points.length - 1)];
               
               if(p && nextP) {
                   const angle = Math.atan2(nextP.y - p.y, nextP.x - p.x);
-                  
                   ctx.save();
                   ctx.translate(p.x, p.y);
                   ctx.rotate(angle);
-                  
-                  // Draw Triangle Arrow
                   ctx.beginPath();
                   ctx.moveTo(0, 0);
                   ctx.lineTo(-10, -5);
                   ctx.lineTo(-10, 5);
                   ctx.fill();
-                  
                   ctx.restore();
               }
           });
       }
 
-      // B. START POINT (Pulsing Green Circle)
+      // B. START POINT
       if (startPoint) {
           ctx.beginPath();
           ctx.arc(startPoint.x, startPoint.y, 12, 0, 2 * Math.PI);
-          ctx.fillStyle = '#22c55e'; // Green
+          ctx.fillStyle = '#22c55e';
           ctx.fill();
           ctx.lineWidth = 3;
           ctx.strokeStyle = '#ffffff';
           ctx.stroke();
           
-          // "S" Text
           ctx.fillStyle = 'white';
           ctx.font = 'bold 12px Arial';
           ctx.textAlign = 'center';
@@ -203,17 +256,16 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
           ctx.fillText("S", startPoint.x, startPoint.y);
       }
 
-      // C. END POINT (Red/Checkered Circle)
+      // C. END POINT
       if (endPoint) {
           ctx.beginPath();
           ctx.arc(endPoint.x, endPoint.y, 12, 0, 2 * Math.PI);
-          ctx.fillStyle = '#ef4444'; // Red
+          ctx.fillStyle = '#ef4444';
           ctx.fill();
           ctx.lineWidth = 3;
           ctx.strokeStyle = '#ffffff';
           ctx.stroke();
 
-           // "E" Text
            ctx.fillStyle = 'white';
            ctx.font = 'bold 12px Arial';
            ctx.textAlign = 'center';
@@ -282,10 +334,9 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
       ctx.fillStyle = '#10b981'; // Emerald
       let newProgress = findBestProgress(x, y, highestProgress);
       
-      // LOGIC: Ensure user starts near the start point
       if (highestProgress === 0 && newProgress > 10) {
           setMessage("⚠️ Start at the Green Circle!");
-          return; // Ignore drawing if they jumped to the middle
+          return;
       }
 
       if (newProgress >= 96) newProgress = 100;
@@ -300,7 +351,8 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
 
   return (
     <div className="flex flex-col items-center">
-      {/* HEADER INFO */}
+      
+      {/* 1. Header Controls (Debug, Reset) */}
       <div className="flex justify-between w-full max-w-[400px] mb-2 text-sm text-gray-400">
         <label className="flex items-center cursor-pointer hover:text-white">
           <input type="checkbox" className="mr-2" checked={showDebug} onChange={(e) => setShowDebug(e.target.checked)} /> 
@@ -311,12 +363,22 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
             onClick={handleHotReset}
             className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-1 rounded text-sm font-bold flex items-center gap-2 transition"
         >
-            <span>↺</span> Retry
+            <span>↺</span> Reset
         </button>
       </div>
 
-      {/* CANVAS CONTAINER */}
-      <div className="relative inline-block shadow-2xl rounded-xl overflow-hidden bg-gray-900 border border-gray-700">
+      {/* 2. HUD Message */}
+      <div className="mb-4">
+        <span className={`hud-message ${
+             message.includes("⚠️") || message.includes("Off") ? "msg-error" : 
+             isLevelComplete ? "msg-success" : "msg-default"
+        }`}>
+            {message}
+        </span>
+      </div>
+
+      {/* 3. CANVAS WRAPPER (Now uses standard CSS class) */}
+      <div className="canvas-container">
         <canvas
             ref={canvasRef}
             style={{ width: '600px', height: '600px', cursor: 'crosshair', touchAction: 'none' }}
@@ -329,29 +391,31 @@ const TraceCanvas = ({ shape, difficulty = 'medium' }) => {
             onTouchMove={draw}
         />
         
-        {/* INSTRUCTION OVERLAY */}
-        <div className="absolute top-4 left-0 w-full text-center pointer-events-none">
-            <span className={`px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm transition-colors ${
-                message.includes("⚠️") || message.includes("Off") 
-                ? "bg-red-500/80 text-white" 
-                : "bg-black/50 text-white"
-            }`}>
-                {message}
-            </span>
-        </div>
+        {/* --- 4. SUBMIT OVERLAY (Standard CSS Class) --- */}
+        {isLevelComplete && !hasSubmitted && (
+            <div className="submit-overlay">
+                <button 
+                    onClick={handleManualSubmit}
+                    className="save-btn"
+                >
+                    💾 Save & Claim XP
+                </button>
+            </div>
+        )}
 
-        {/* PROGRESS BAR */}
-        <div className="absolute bottom-0 left-0 w-full h-2 bg-gray-800">
-            <div style={{ width: `${highestProgress}%` }} className="h-full bg-emerald-500 transition-all duration-75 absolute top-0 left-0" />
-            <div style={{ width: `${Math.min(100, penaltyScore)}%` }} className="h-full bg-red-500/50 transition-all duration-75 absolute top-0 right-0" />
+        {/* 5. Progress Bar */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '8px', background: '#1f2937' }}>
+            <div style={{ width: `${highestProgress}%`, height: '100%', background: '#10b981', position: 'absolute', left: 0, transition: 'width 0.1s' }} />
+            <div style={{ width: `${Math.min(100, penaltyScore)}%`, height: '100%', background: 'rgba(239, 68, 68, 0.5)', position: 'absolute', right: 0 }} />
         </div>
       </div>
       
-      {/* BIG SCORE DISPLAY */}
+      {/* 6. Score Display */}
       <div className="mt-6 text-center">
         <div className="text-5xl font-bold text-white mb-1">{finalScore}</div>
         <div className="text-xs text-gray-500 uppercase tracking-widest">Score</div>
       </div>
+
     </div>
   );
 };

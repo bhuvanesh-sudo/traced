@@ -1,0 +1,60 @@
+/* src/components/Leaderboard.css */
+
+/* 1. The Dark Background Overlay */
+.leaderboard-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85); /* Darker backdrop */
+  backdrop-filter: blur(5px); /* Blurs the game behind it */
+  
+  /* Centering Magic */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  z-index: 10000; /* Ensure it sits on top of EVERYTHING */
+}
+
+/* 2. The Modal Box */
+.leaderboard-modal {
+  background-color: #1e293b; /* Slate-800 */
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  border-radius: 12px;
+  border: 1px solid #475569;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  animation: popIn 0.3s ease-out;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* 3. Scrollable Area */
+.leaderboard-content {
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+/* 4. Table Styles */
+.lb-table { width: 100%; border-collapse: collapse; }
+.lb-table th { text-align: left; color: #94a3b8; font-size: 0.85rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }
+.lb-table td { padding: 0.75rem 0; border-bottom: 1px solid #334155; color: #e2e8f0; }
+.lb-rank { font-family: monospace; color: #64748b; width: 40px; }
+.lb-xp { text-align: right; color: #818cf8; font-family: monospace; font-weight: bold; }
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.close-btn:hover { color: white; }
