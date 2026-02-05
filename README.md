@@ -8,22 +8,22 @@ By gamifying graphomotor exercises, users practice precision control by tracing 
 
 ## Features
 
-* **✍️ Dynamic Tracing Engine:** Uses HTML5 Canvas to render shapes and detect cursor path compliance in real-time.
-* **🔐 User Authentication:** Secure Login and Registration system using JWT (JSON Web Tokens) and Bcrypt.
-* **📈 Progression System:** Users earn XP based on accuracy. Levels include "The Straight Path", "The Infinity Knot", and more.
-* **🏆 Leaderboard:** Global ranking system to view top players by XP.
-* **⚙️ Difficulty Modes:**
-* **Easy:** Wide tolerance, low penalty.
-* **Medium:** Standard precision required.
-* **Hard:** Strict boundaries, high penalty for deviation.
+* **Dynamic Tracing Engine:** Uses HTML5 Canvas to render shapes and detect cursor path compliance in real-time.
+* **User Authentication:** Secure Login and Registration system using JWT (JSON Web Tokens) and Bcrypt.
+* **Progression System:** Users earn XP based on accuracy. Levels include "The Straight Path", "The Infinity Knot", and more.
+* **Leaderboard:** Global ranking system to view top players by XP.
+* **Difficulty Modes:**
+* **Easy:* Wide tolerance, low penalty.
+* **Medium:* Standard precision required.
+* **Hard:* Strict boundaries, high penalty for deviation.
 
 
-* **🔄 Hot Reset:** Instant level retry mechanism designed for accessibility (no page reloads).
-* **📱 Responsive Design:** Custom CSS styling for a focused, distraction-free interface.
+* **Hot Reset:** Instant level retry mechanism designed for accessibility (no page reloads).
+* **Responsive Design:** Custom CSS styling for a focused, distraction-free interface.
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 * **Frontend:** React.js (Vite), HTML5 Canvas API
 * **Backend:** Node.js, Express.js
@@ -32,7 +32,7 @@ By gamifying graphomotor exercises, users practice precision control by tracing 
 
 ---
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 
@@ -73,7 +73,7 @@ node seed.js
 ```
 
 
-*(You should see "✅ Levels Seeded" in the console)*.
+*(You should see "Levels Seeded" in the console)*.
 4. Start the Server:
 ```bash
 node server.js
@@ -81,7 +81,7 @@ node server.js
 ```
 
 
-*(Ensure it says "🚀 Server running on port 5000" and "✅ MongoDB Connected")*
+*(Ensure it says "Server running on port 5000" and "MongoDB Connected")*
 
 ### 3. Frontend Setup
 
@@ -112,7 +112,7 @@ npm run dev
 
 ---
 
-## 🕹️ How to Play
+## How to Play
 
 1. **Register/Login:** Create a "Hero" account to track your stats.
 2. **Select a Level:** Choose a shape from the sidebar (e.g., "The Straight Path").
@@ -130,7 +130,7 @@ npm run dev
 
 ---
 
-## 🔗 API Reference
+## API Reference
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
@@ -142,7 +142,7 @@ npm run dev
 
 ---
 
-## ❓ Troubleshooting
+## Troubleshooting
 
 **1. "Network Error" or "Failed to fetch"**
 
