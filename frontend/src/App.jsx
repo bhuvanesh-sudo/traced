@@ -4,15 +4,19 @@ import TraceCanvas from './components/TraceCanvas';
 import Login from './components/Login';
 import Leaderboard from './components/Leaderboard';
 import './App.css';
+import SpellProposal from './components/SpellProposal';
+import LevelButton from './components/LevelButton';
+import About from './components/About';
 
 function App() {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  
+  const [view, setView] = useState('game');
   const [shapes, setShapes] = useState([]);
   const [currentShape, setCurrentShape] = useState(null);
   const [difficulty, setDifficulty] = useState('medium');
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+
 
   useEffect(() => {
     if (user) {
@@ -83,25 +87,37 @@ function App() {
             <option value="hard">Hard (Strict)</option>
           </select>
         </div>
+        
 
         <nav className="level-list">
           <h3 className="text-xs text-gray-500 uppercase mb-2">Levels</h3>
           {shapes.map((shape, index) => (
-             <button 
-               key={shape._id} 
-               className={`level-btn ${currentShape?._id === shape._id ? 'active' : ''}`}
-               onClick={() => setCurrentShape(shape)}
-             >
-               <span className="level-num">{index + 1}</span>
-               <span className="level-name truncate">{shape.name}</span>
-             </button>
+              <LevelButton 
+                key={shape._id}
+                shape={shape}
+                index={index}
+                isActive={currentShape?._id === shape._id}
+                onClick={() => setCurrentShape(shape)}
+              />
            ))}
         </nav>
+        <About /> 
       </aside>
-
+          
       <main className="game-stage">
-        {currentShape ? (
-          <div className="canvas-wrapper">
+        <button 
+          onClick={() => setView('proposal')}
+          className="proposal-btn" 
+        >
+          Propose New Spell!
+        </button>
+        {view === 'proposal' ? (
+           <div className="flex items-center justify-center h-full">
+              <SpellProposal onCancel={() => setView('game')} />
+           </div>
+        ) : (
+           currentShape ? (
+             <div className="canvas-wrapper">
              <TraceCanvas 
                 key={`${currentShape._id}-${difficulty}`} 
                 shape={currentShape} 
@@ -110,7 +126,7 @@ function App() {
                 onScoreUpdate={handleScoreUpdate}
              />
           </div>
-        ) : (
+        ) : 
           <div className="loading">Loading...</div>
         )}
       </main>
