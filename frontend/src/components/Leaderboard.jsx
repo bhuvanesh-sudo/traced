@@ -23,7 +23,7 @@ const Leaderboard = ({ isOpen, onClose }) => {
         {/* Header */}
         <div className="flex justify-between items-center p-4 border-b border-slate-700 bg-slate-900/50 rounded-t-lg">
           <h2 className="text-xl font-bold text-yellow-400 flex items-center gap-2">
-            🏆 Hall of Fame
+            Hall of Fame
           </h2>
           <button onClick={onClose} className="close-btn">&times;</button>
         </div>

@@ -21,23 +21,23 @@ exports.getLeaderboard = async (req, res) => {
       .limit(10)
       .select('username xp level');
     
-    console.log(`🏆 Sending ${leaders.length} leaderboard entries`);
+    console.log(`Sending ${leaders.length} leaderboard entries`);
     res.status(200).json(leaders);
   } catch (error) {
-    console.error("🏆 Leaderboard Error:", error);
+    console.error("Leaderboard Error:", error);
     res.status(500).json({ message: 'Leaderboard Error', error: error.message });
   }
 };
 
 // POST /api/game/attempt
 exports.submitAttempt = async (req, res) => {
-  console.log("📥 Received Attempt:", req.body); // DEBUG LOG
+  console.log("Received Attempt:", req.body); // DEBUG LOG
 
   const { userId, shapeId, isSuccess, accuracyScore } = req.body;
 
   // 1. Validate Input
   if (!userId || !shapeId) {
-    console.log("❌ Missing Data");
+    console.log("Missing Data");
     return res.status(400).json({ message: 'Missing userId or shapeId' });
   }
 
@@ -58,7 +58,7 @@ exports.submitAttempt = async (req, res) => {
         const bonusXP = Math.floor(safeScore / 10);
         const xpToAdd = 10 + bonusXP;
 
-        console.log(`✨ Adding ${xpToAdd} XP to User ${userId}`);
+        console.log(`Adding ${xpToAdd} XP to User ${userId}`);
 
         const updatedUser = await User.findByIdAndUpdate(
             userId, 
@@ -73,11 +73,11 @@ exports.submitAttempt = async (req, res) => {
     }
 
     // 4. Send Success Response
-    console.log("✅ Success! New XP:", newXP);
+    console.log("Success! New XP:", newXP);
     res.status(201).json({ message: 'Saved', newXP });
 
   } catch (error) {
-    console.error("🔥 SERVER ERROR:", error);
+    console.error("SERVER ERROR:", error);
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 };
