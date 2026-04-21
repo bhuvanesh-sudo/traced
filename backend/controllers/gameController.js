@@ -1,5 +1,5 @@
 const Shape = require('../models/Shape');
-const User = require('../models/User'); // We need User model to update XP
+const User = require('../models/User'); 
 const Attempt = require('../models/Attempt');
 
 // GET /api/game/shapes
@@ -15,7 +15,7 @@ exports.getShapes = async (req, res) => {
 // GET /api/game/leaderboard
 exports.getLeaderboard = async (req, res) => {
   try {
-    // Fetch users, sort by XP, limit to 10
+    // Fetch users
     const leaders = await User.find()
       .sort({ xp: -1 })
       .limit(10)
@@ -35,14 +35,14 @@ exports.submitAttempt = async (req, res) => {
 
   const { userId, shapeId, isSuccess, accuracyScore } = req.body;
 
-  // 1. Validate Input
+  // Validate Input
   if (!userId || !shapeId) {
     console.log("Missing Data");
     return res.status(400).json({ message: 'Missing userId or shapeId' });
   }
 
   try {
-    // 2. Save the Attempt
+    // Save the Attempt
     await Attempt.create({
       user: userId,
       shape: shapeId,
@@ -50,10 +50,10 @@ exports.submitAttempt = async (req, res) => {
       accuracyScore
     });
 
-    // 3. Update XP (Only if success)
+    // Update XP 
     let newXP = 0;
     if (isSuccess) {
-        // Ensure accuracyScore is a number
+        
         const safeScore = Number(accuracyScore) || 0;
         const bonusXP = Math.floor(safeScore / 10);
         const xpToAdd = 10 + bonusXP;
@@ -72,7 +72,7 @@ exports.submitAttempt = async (req, res) => {
         newXP = updatedUser.xp;
     }
 
-    // 4. Send Success Response
+    // Send Response
     console.log("Success! New XP:", newXP);
     res.status(201).json({ message: 'Saved', newXP });
 
